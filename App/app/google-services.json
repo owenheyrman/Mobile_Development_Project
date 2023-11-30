@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "835520564715",
+    "project_id": "mobile-development-proje-5d0b8",
+    "storage_bucket": "mobile-development-proje-5d0b8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:835520564715:android:a4d7aeeb50b102cc251dae",
+        "android_client_info": {
+          "package_name": "edu.ap.mobile_development_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCVvwsNAwN-RaQ55Up9fZCi1OBWHJJh88"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
