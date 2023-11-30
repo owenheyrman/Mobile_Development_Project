@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "edu.ap.mobile_development_project"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "edu.ap.mobile_development_project"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
