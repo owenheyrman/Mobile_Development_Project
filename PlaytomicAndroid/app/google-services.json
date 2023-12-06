@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "556001746377",
+    "project_id": "playtomicandroid",
+    "storage_bucket": "playtomicandroid.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:556001746377:android:382f0598332a2d1cca5c18",
+        "android_client_info": {
+          "package_name": "edu.ap.playtomicandroid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLiUBAERfzW3CY9l-jaybEgJoTP3w0pAw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
