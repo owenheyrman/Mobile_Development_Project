@@ -19,17 +19,16 @@ class PlayFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Assuming your button has the ID book_court_button
         val bookCourtButton = view.findViewById<Button>(R.id.book_court_button)
-        //bookCourtButton.setOnClickListener {
-        //    openBookCourtFragment()
-        //}
+        bookCourtButton.setOnClickListener {
+            openBookCourtFragment()
+        }
     }
 
     private fun openBookCourtFragment() {
         val transaction = parentFragmentManager.beginTransaction()
         transaction.replace(R.id.fragment_container, BookCourtFragment())
-        transaction.addToBackStack(null) // Optional, but useful for enabling navigation back to the previous fragment
+        transaction.addToBackStack(null)
         transaction.commit()
     }
 
