@@ -28,7 +28,7 @@ class PlayFragment : Fragment() {
 
     private fun openBookCourtFragment() {
         val transaction = parentFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container, BookCourtFragment())
+        //transaction.replace(R.id.fragment_container, BookCourtFragment())
         transaction.addToBackStack(null) // Optional, but useful for enabling navigation back to the previous fragment
         transaction.commit()
     }
