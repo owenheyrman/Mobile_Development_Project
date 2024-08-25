@@ -1,35 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".ExamDetailsFragment">
+    tools:context=".ExamDetailsFragment"
+    android:fillViewport="true">
 
-    <!-- Timer to display elapsed time -->
-    <TextView
-        android:id="@+id/tvTimer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="00:00"
-        android:textSize="24sp"
-        android:layout_gravity="center"
-        android:padding="16dp" />
-
-    <!-- RecyclerView to display the list of questions -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvQuestions"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="16dp" />
-
-    <!-- Button to submit the exam -->
-    <Button
-        android:id="@+id/btnSubmit"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Submit Exam"
-        android:padding="16dp" />
+        android:orientation="vertical">
 
-</LinearLayout>
+        <!-- Timer to display elapsed time -->
+        <TextView
+            android:id="@+id/tvTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textSize="24sp"
+            android:layout_gravity="center"
+            android:padding="16dp" />
+
+        <!-- RecyclerView to display the list of questions -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvQuestions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:nestedScrollingEnabled="false"/>
+
+        <!-- Button to submit the exam -->
+        <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit Exam"
+            android:padding="16dp" />
+
+    </LinearLayout>
+</ScrollView>
