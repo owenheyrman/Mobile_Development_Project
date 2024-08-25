@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "417833903319",
+    "project_id": "herexamen-owen-heyrman",
+    "storage_bucket": "herexamen-owen-heyrman.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:417833903319:android:f65ddbcddc3ee363e73c92",
+        "android_client_info": {
+          "package_name": "edu.ap.herexamen_owen_heyrman"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWBpkhM2daa3u1S69vprBNl1AqSUm6nlM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

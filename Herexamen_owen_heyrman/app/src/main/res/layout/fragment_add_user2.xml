@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/etFirstName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="First Name"/>
+
+        <EditText
+            android:id="@+id/etLastName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Last Name"
+            android:layout_marginTop="8dp"/>
+
+        <Button
+            android:id="@+id/btnAddUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add User"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center"/>
+
+        <EditText
+            android:id="@+id/etUserList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Paste multiple users here (First Name, Last Name per line)"
+            android:inputType="textMultiLine"
+            android:layout_marginTop="16dp"
+            android:gravity="top"
+            android:minLines="5"/>
+
+        <Button
+            android:id="@+id/btnAddMultipleUsers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add Multiple Users"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center"/>
+    </LinearLayout>
+</ScrollView>
