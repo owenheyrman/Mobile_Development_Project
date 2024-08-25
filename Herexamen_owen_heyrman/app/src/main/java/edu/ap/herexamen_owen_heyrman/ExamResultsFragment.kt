@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.firestore.DocumentSnapshot
 import edu.ap.herexamen_owen_heyrman.data.FirestoreInstance
 import edu.ap.herexamen_owen_heyrman.databinding.FragmentExamResultsBinding
 import org.osmdroid.config.Configuration
@@ -127,39 +129,51 @@ class ExamResultsFragment : Fragment() {
         db.collection("results")
             .get()
             .addOnSuccessListener { result ->
-                val userDetailsMap = mutableMapOf<String, UserExamDetail>()
-                val examResults = result.documents.groupBy { it.getString("title") }
-                    .map { (title, documents) ->
-                        documents.forEach { doc ->
-                            val userId = doc.getString("userId") ?: "Unknown"
-                            if (userId !in userDetailsMap) {
-                                val userRef = db.collection("users").document(userId)
-                                userRef.get().addOnSuccessListener { userSnapshot ->
-                                    val firstName = userSnapshot.getString("firstName") ?: "Unknown"
-                                    val lastName = userSnapshot.getString("lastName") ?: "Unknown"
-                                    val userExamDetail = UserExamDetail(
-                                        userId = userId,
-                                        firstName = firstName,
-                                        lastName = lastName,
-                                        score = (doc.getLong("score") ?: 0).toInt(),
-                                        address = doc.getString("address") ?: "Unknown Address",
-                                        duration = doc.getString("duration") ?: "Unknown Duration"
-                                    )
-                                    userDetailsMap[userId] = userExamDetail
-                                    // After all details are fetched, update the adapter
-                                    if (userDetailsMap.size == documents.size) {
-                                        val examResultDetail = ExamResultDetail(
-                                            title = title ?: "Unknown Exam",
-                                            userDetails = userDetailsMap.values.toList()
-                                        )
-                                        resultsAdapter.submitList(listOf(examResultDetail))
-                                    }
-                                }.addOnFailureListener { exception ->
-                                    Log.e(TAG, "Error fetching user details", exception)
-                                }
+                // Group documents by exam title
+                val groupedDocuments = result.documents.groupBy { it.getString("title") }
+                val examResultDetails = mutableListOf<ExamResultDetail>()
+
+                val tasks = groupedDocuments.map { (title, documents) ->
+                    // Fetch user details for each exam's documents
+                    val userDetailTasks = documents.map { doc ->
+                        val userId = doc.getString("userId") ?: "Unknown"
+                        db.collection("users").document(userId).get()
+                    }
+
+                    // Wait for all user detail tasks to complete
+                    Tasks.whenAllSuccess<DocumentSnapshot>(userDetailTasks)
+                        .addOnSuccessListener { userSnapshots ->
+                            val userDetails = userSnapshots.map { userSnapshot ->
+                                val userId = userSnapshot.id
+                                UserExamDetail(
+                                    userId = userId,
+                                    firstName = userSnapshot.getString("firstName") ?: "Unknown",
+                                    lastName = userSnapshot.getString("lastName") ?: "Unknown",
+                                    score = documents.find { it.getString("userId") == userId }
+                                        ?.getLong("score")?.toInt() ?: 0,
+                                    address = documents.find { it.getString("userId") == userId }
+                                        ?.getString("address") ?: "Unknown Address",
+                                    duration = documents.find { it.getString("userId") == userId }
+                                        ?.getString("duration") ?: "Unknown Duration"
+                                )
+                            }
+                            // Add the details to the list
+                            val examResultDetail = ExamResultDetail(
+                                title = title ?: "Unknown Exam",
+                                userDetails = userDetails
+                            )
+                            examResultDetails.add(examResultDetail)
+
+                            // Check if this is the last exam
+                            if (examResultDetails.size == groupedDocuments.size) {
+                                resultsAdapter.submitList(examResultDetails)
                             }
                         }
-                    }
+                        .addOnFailureListener { exception ->
+                            Log.e(TAG, "Error fetching user details", exception)
+                            Toast.makeText(context, "Error fetching user details", Toast.LENGTH_SHORT).show()
+                        }
+                }
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(context, "Error fetching results: ${exception.message}", Toast.LENGTH_SHORT).show()

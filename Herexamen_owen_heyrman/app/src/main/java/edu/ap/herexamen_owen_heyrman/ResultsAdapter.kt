@@ -20,20 +20,16 @@ data class UserResult(
     val userId: String = "",
     val firstName: String = "",
     val lastName: String = "",
-    val results: List<ExamScore> = emptyList(),
-    val latitude: Double? = null,  // Added for map feature
-    val longitude: Double? = null  // Added for map feature
+    val results: List<ExamScore> = emptyList()
 )
 
 data class UserExamDetail(
     val userId: String = "",
-    var firstName: String = "",
-    var lastName: String = "",
+    val firstName: String = "",
+    val lastName: String = "",
     val score: Int = 0,
     val address: String = "",
-    val duration: String = "",
-    val latitude: Double? = null,  // Added for map feature
-    val longitude: Double? = null  // Added for map feature
+    val duration: String = ""
 )
 
 data class ExamResultDetail(
@@ -70,14 +66,8 @@ class ResultsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            VIEW_TYPE_USER_RESULT -> {
-                val view = layoutInflater.inflate(R.layout.item_user_result, parent, false)
-                UserResultViewHolder(view)
-            }
-            VIEW_TYPE_EXAM_RESULT_DETAIL -> {
-                val view = layoutInflater.inflate(R.layout.item_exam_result_detail, parent, false)
-                ExamResultDetailViewHolder(view)
-            }
+            VIEW_TYPE_USER_RESULT -> UserResultViewHolder(layoutInflater.inflate(R.layout.item_user_result, parent, false))
+            VIEW_TYPE_EXAM_RESULT_DETAIL -> ExamResultDetailViewHolder(layoutInflater.inflate(R.layout.item_exam_result_detail, parent, false))
             else -> throw IllegalArgumentException("Invalid view type")
         }
     }
@@ -89,15 +79,15 @@ class ResultsAdapter(
         }
     }
 
+    override fun getItemCount(): Int = results.size
+
     override fun getItemViewType(position: Int): Int {
         return when (results[position]) {
             is UserResult -> VIEW_TYPE_USER_RESULT
             is ExamResultDetail -> VIEW_TYPE_EXAM_RESULT_DETAIL
-            else -> throw IllegalArgumentException("Unknown item type")
+            else -> throw IllegalArgumentException("Invalid item type")
         }
     }
-
-    override fun getItemCount(): Int = results.size
 
     fun submitList(newResults: List<Any>) {
         results = newResults
