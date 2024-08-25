@@ -43,7 +43,7 @@ data class ExamResultDetail(
 
 class ResultsAdapter(
     private var results: List<Any>,
-    private val showRenderMapButton: Boolean,
+    private val isUserView: Boolean,
     private val onRenderMapClick: (UserExamDetail) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -62,19 +62,16 @@ class ResultsAdapter(
         private val tvExamDetails: TextView = view.findViewById(R.id.tvExamDetails)
         private val btnRenderMap: Button = view.findViewById(R.id.btnRenderMap)
 
-        init {
-            // Set the visibility of the button based on the mode
-            btnRenderMap.visibility = if (showRenderMapButton) View.VISIBLE else View.GONE
-        }
-
         fun bind(examResultDetail: ExamResultDetail) {
             tvExamTitle.text = "Exam: ${examResultDetail.title}"
             tvExamDetails.text = examResultDetail.userDetails.joinToString("\n") {
                 "Name: ${it.firstName} ${it.lastName}, Score: ${it.score}, Address: ${it.address}, Duration: ${it.duration}"
             }
 
+            // Set up the "Render on Map" button visibility and click listener
+            btnRenderMap.visibility = if (isUserView) View.VISIBLE else View.GONE
             btnRenderMap.setOnClickListener {
-                // Trigger the callback when the button is clicked
+                // Assuming the first user detail should be used here; modify as needed
                 examResultDetail.userDetails.firstOrNull()?.let { userExamDetail ->
                     onRenderMapClick(userExamDetail)
                 }

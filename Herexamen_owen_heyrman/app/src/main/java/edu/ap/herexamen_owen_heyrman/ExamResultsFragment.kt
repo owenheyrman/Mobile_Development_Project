@@ -56,6 +56,7 @@ class ExamResultsFragment : Fragment() {
         val viewMode = arguments?.getString(ARG_VIEW_MODE)
         Log.d(TAG, "View mode received: $viewMode")
 
+        // Initialize the map view only if in 'by_user' mode
         if (viewMode == "by_user") {
             binding.mapView.visibility = View.VISIBLE
             binding.mapView.setMultiTouchControls(true)
@@ -64,7 +65,7 @@ class ExamResultsFragment : Fragment() {
             mapController.setZoom(15.0)
             mapController.setCenter(startPoint)
 
-            // Add a marker
+            // Add a marker to the map
             val marker = Marker(binding.mapView)
             marker.position = startPoint
             marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
@@ -86,6 +87,26 @@ class ExamResultsFragment : Fragment() {
             }
         }
     }
+
+
+    private fun onRenderMapClick(userExamDetail: UserExamDetail) {
+        // Assume you have latitude and longitude fields in UserExamDetail
+        val location = userExamDetail.location
+        binding.mapView.controller.setCenter(location)
+
+        // Clear existing markers
+        binding.mapView.overlays.clear()
+
+        // Add new marker
+        val marker = Marker(binding.mapView)
+        marker.position = location
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        binding.mapView.overlays.add(marker)
+
+        binding.mapView.invalidate()
+    }
+
+
 
 
     private fun fetchResultsByUser() {
@@ -186,29 +207,7 @@ class ExamResultsFragment : Fragment() {
             }
     }
 
-    private fun onRenderMapClick(userExamDetail: UserExamDetail) {
-        // Clear previous markers
-        binding.mapView.overlays.clear()
 
-        // Extract location from the userExamDetail
-        val address = userExamDetail.address
-        val location = fetchLocationFromAddress(address) // Implement this method
-
-        // Add a new marker if location is found
-        location?.let {
-            val marker = Marker(binding.mapView)
-            marker.position = it
-            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-            binding.mapView.overlays.add(marker)
-
-            // Center the map on the marker
-            val mapController = binding.mapView.controller
-            mapController.setZoom(15.0)
-            mapController.setCenter(it)
-        } ?: run {
-            Toast.makeText(context, "Unable to find location for address: $address", Toast.LENGTH_SHORT).show()
-        }
-    }
 
     private fun fetchLocationFromAddress(address: String): GeoPoint? {
         // Implement a method to fetch GeoPoint from address
