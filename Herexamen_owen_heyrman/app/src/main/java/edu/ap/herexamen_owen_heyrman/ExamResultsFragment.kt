@@ -24,6 +24,14 @@ class ExamResultsFragment : Fragment() {
 
     private val db = FirestoreInstance.firestore
     private lateinit var resultsAdapter: ResultsAdapter
+    private lateinit var userResultDetailAdapter: UserResultDetailAdapter
+
+    private fun convertToOsmGeoPoint(firestoreGeoPoint: com.google.firebase.firestore.GeoPoint?): GeoPoint? {
+        return firestoreGeoPoint?.let {
+            GeoPoint(it.latitude, it.longitude)
+        }
+    }
+
 
     companion object {
         private const val TAG = "ExamResultsFragment"
@@ -70,26 +78,25 @@ class ExamResultsFragment : Fragment() {
             marker.position = startPoint
             marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
             binding.mapView.overlays.add(marker)
+
+            // Setup RecyclerView and Adapters for 'by_user' mode
+            binding.rvResults.layoutManager = LinearLayoutManager(context)
+            userResultDetailAdapter = UserResultDetailAdapter(::onShowMapClick)
+            binding.rvResults.adapter = userResultDetailAdapter
+            fetchResultsByUser()
         } else {
             binding.mapView.visibility = View.GONE
-        }
 
-        binding.rvResults.layoutManager = LinearLayoutManager(context)
-        resultsAdapter = ResultsAdapter(emptyList(), viewMode == "by_user", ::onRenderMapClick)
-        binding.rvResults.adapter = resultsAdapter
-
-        when (viewMode) {
-            "by_user" -> fetchResultsByUser()
-            "by_exam" -> fetchResultsByExam()
-            else -> {
-                Toast.makeText(context, "Invalid view mode", Toast.LENGTH_SHORT).show()
-                Log.e(TAG, "Invalid view mode: $viewMode")
-            }
+            // Setup RecyclerView and Adapters for 'by_exam' mode
+            binding.rvResults.layoutManager = LinearLayoutManager(context)
+            resultsAdapter = ResultsAdapter(emptyList())
+            binding.rvResults.adapter = resultsAdapter
+            fetchResultsByExam()
         }
     }
 
 
-    private fun onRenderMapClick(userExamDetail: UserExamDetail) {
+    private fun onShowMapClick(userExamDetail: UserExamDetail) {
         // Assume you have latitude and longitude fields in UserExamDetail
         val location = userExamDetail.location
         binding.mapView.controller.setCenter(location)
@@ -106,39 +113,39 @@ class ExamResultsFragment : Fragment() {
         binding.mapView.invalidate()
     }
 
-
-
-
     private fun fetchResultsByUser() {
         Log.d(TAG, "Fetching results by user")
         db.collection("results")
             .get()
             .addOnSuccessListener { result ->
                 val userResultsMap = result.documents.groupBy { it.getString("userId") }
-                val userResults = mutableListOf<UserResult>()
+                val userResults = mutableListOf<ExamResultDetail>()
 
                 val userDetailTasks = userResultsMap.map { (userId, documents) ->
                     val userRef = db.collection("users").document(userId ?: "Unknown")
                     userRef.get().addOnSuccessListener { userSnapshot ->
                         val firstName = userSnapshot.getString("firstName") ?: "Unknown"
                         val lastName = userSnapshot.getString("lastName") ?: "Unknown"
-                        val examScores = documents.map { doc ->
-                            ExamScore(
-                                title = doc.getString("title") ?: "Unknown Title",
-                                score = (doc.getLong("score") ?: 0).toInt()
+                        val userExamDetails = documents.map { doc ->
+                            UserExamDetail(
+                                userId = userId ?: "Unknown",
+                                firstName = firstName,
+                                lastName = lastName,
+                                score = (doc.getLong("score") ?: 0).toInt(),
+                                address = doc.getString("address") ?: "Unknown Address",
+                                duration = doc.getString("duration") ?: "Unknown Duration",
+                                location = convertToOsmGeoPoint(doc.getGeoPoint("location"))
                             )
                         }
-                        val userResult = UserResult(
-                            userId = userId ?: "Unknown",
-                            firstName = firstName,
-                            lastName = lastName,
-                            results = examScores
+                        val examResultDetail = ExamResultDetail(
+                            title = "Exam Result", // Or set an appropriate title
+                            userDetails = userExamDetails
                         )
-                        userResults.add(userResult)
+                        userResults.add(examResultDetail)
 
                         // Submit the list only after processing all users
                         if (userResults.size == userResultsMap.size) {
-                            resultsAdapter.submitList(userResults)
+                            userResultDetailAdapter.submitList(userResults)
                         }
                     }
                 }
@@ -148,7 +155,6 @@ class ExamResultsFragment : Fragment() {
                 Log.e(TAG, "Error fetching results", exception)
             }
     }
-
 
     private fun fetchResultsByExam() {
         Log.d(TAG, "Fetching results by exam")
@@ -180,7 +186,9 @@ class ExamResultsFragment : Fragment() {
                                     address = documents.find { it.getString("userId") == userId }
                                         ?.getString("address") ?: "Unknown Address",
                                     duration = documents.find { it.getString("userId") == userId }
-                                        ?.getString("duration") ?: "Unknown Duration"
+                                        ?.getString("duration") ?: "Unknown Duration",
+                                    location = convertToOsmGeoPoint(documents.find { it.getString("userId") == userId }
+                                        ?.getGeoPoint("location"))
                                 )
                             }
                             // Add the details to the list
@@ -208,10 +216,9 @@ class ExamResultsFragment : Fragment() {
     }
 
 
-
     private fun fetchLocationFromAddress(address: String): GeoPoint? {
         // Implement a method to fetch GeoPoint from address
-        // This might involve using a geocoding API
+        // This is already implemented in the GeocodingHelper accessable through LocationManager
         // For now, return null
         return null
     }

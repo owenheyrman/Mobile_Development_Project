@@ -7,14 +7,12 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import org.osmdroid.util.GeoPoint
-import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
 
 class UserResultDetailAdapter(
-    private val onShowMapClick: (UserExamDetail) -> Unit
+    private val onShowMapClick: (UserExamDetail) -> Unit // Callback function
 ) : RecyclerView.Adapter<UserResultDetailAdapter.UserResultDetailViewHolder>() {
 
-    private val userExamDetails = mutableListOf<UserExamDetail>()
+    private val examResults = mutableListOf<ExamResultDetail>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserResultDetailViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_user_result_detail, parent, false)
@@ -22,67 +20,34 @@ class UserResultDetailAdapter(
     }
 
     override fun onBindViewHolder(holder: UserResultDetailViewHolder, position: Int) {
-        holder.bind(userExamDetails[position])
+        holder.bind(examResults[position])
     }
 
-    override fun getItemCount(): Int {
-        return userExamDetails.size
-    }
+    override fun getItemCount(): Int = examResults.size
 
-    fun submitList(results: List<UserExamDetail>) {
-        userExamDetails.clear()
-        userExamDetails.addAll(results)
+    fun submitList(results: List<ExamResultDetail>) {
+        examResults.clear()
+        examResults.addAll(results)
         notifyDataSetChanged()
     }
 
     inner class UserResultDetailViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val tvExamTitle: TextView = view.findViewById(R.id.tvExamTitle)
-        private val tvScore: TextView = view.findViewById(R.id.tvScore)
-        private val tvAddress: TextView = view.findViewById(R.id.tvAddress)
-        private val tvDuration: TextView = view.findViewById(R.id.tvDuration)
-        private val btnShowMap: Button = view.findViewById(R.id.btnRenderMap)
-        private val mapView: MapView = view.findViewById(R.id.mapView)
+        private val tvExamDetails: TextView = view.findViewById(R.id.tvExamDetails)
+        private val btnShowOnMap: Button = view.findViewById(R.id.btnShowOnMap) // Rename to reflect actual button
 
-        private var examLocation: GeoPoint? = null
+        fun bind(examResultDetail: ExamResultDetail) {
+            tvExamTitle.text = "Exam: ${examResultDetail.title}"
+            val detailsText = examResultDetail.userDetails.joinToString("\n") {
+                "Name: ${it.firstName} ${it.lastName}, Score: ${it.score}%"
+            }
+            tvExamDetails.text = detailsText
 
-        init {
-            btnShowMap.setOnClickListener {
-                if (mapView.visibility == View.GONE) {
-                    mapView.visibility = View.VISIBLE
-                    mapView.setMultiTouchControls(true)
-                    mapView.controller.setZoom(15.0)
-
-                    examLocation?.let {
-                        val marker = Marker(mapView)
-                        marker.position = it
-                        marker.title = "Exam Location"
-                        mapView.overlays.add(marker)
-                        mapView.controller.setCenter(it)
-                    }
-                    mapView.invalidate()
-                } else {
-                    mapView.visibility = View.GONE
+            btnShowOnMap.setOnClickListener {
+                examResultDetail.userDetails.forEach { userExamDetail ->
+                    onShowMapClick(userExamDetail) // Invoke the callback
                 }
             }
         }
-
-        fun bind(userExamDetail: UserExamDetail) {
-            tvExamTitle.text = "Exam: ${userExamDetail.firstName} ${userExamDetail.lastName}"
-            tvScore.text = "Score: ${userExamDetail.score}%"
-            tvAddress.text = "Address: ${userExamDetail.address}"
-            tvDuration.text = "Duration: ${userExamDetail.duration}"
-
-            examLocation = userExamDetail.location?.let { GeoPoint(it.latitude, it.longitude) }
-        }
-
-        // MapView lifecycle methods
-        fun onResume() {
-            mapView.onResume()
-        }
-
-        fun onPause() {
-            mapView.onPause()
-        }
-
     }
 }

@@ -46,27 +46,15 @@ data class ExamResultDetail(
 )
 
 class ResultsAdapter(
-    private var results: List<Any>,
-    private val isUserView: Boolean,
-    private val onRenderMapClick: (UserExamDetail) -> Unit
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    inner class UserResultViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val tvName: TextView = view.findViewById(R.id.tvUserName)
-        private val tvResults: TextView = view.findViewById(R.id.tvExamResults)
-
-        fun bind(userResult: UserResult) {
-            tvName.text = "${userResult.firstName} ${userResult.lastName}"
-            tvResults.text = userResult.results.joinToString("\n") { "${it.title}: ${it.score}" }
-        }
-    }
+    private var results: List<ExamResultDetail>
+) : RecyclerView.Adapter<ResultsAdapter.ExamResultDetailViewHolder>() {
 
     inner class ExamResultDetailViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val tvExamTitle: TextView = view.findViewById(R.id.tvExamTitle)
         private val tlExamDetails: TableLayout = view.findViewById(R.id.tlExamDetails)
 
         fun bind(examResultDetail: ExamResultDetail) {
-            tvExamTitle.text = "${examResultDetail.title}"
+            tvExamTitle.text = examResultDetail.title
             tlExamDetails.removeAllViews()
 
             // Add the header row programmatically
@@ -116,37 +104,18 @@ class ResultsAdapter(
         }
     }
 
-
-
-
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExamResultDetailViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return when (viewType) {
-            VIEW_TYPE_USER_RESULT -> UserResultViewHolder(layoutInflater.inflate(R.layout.item_user_result, parent, false))
-            VIEW_TYPE_EXAM_RESULT_DETAIL -> ExamResultDetailViewHolder(layoutInflater.inflate(R.layout.item_exam_result_detail, parent, false))
-            else -> throw IllegalArgumentException("Invalid view type")
-        }
+        return ExamResultDetailViewHolder(layoutInflater.inflate(R.layout.item_exam_result_detail, parent, false))
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder) {
-            is UserResultViewHolder -> holder.bind(results[position] as UserResult)
-            is ExamResultDetailViewHolder -> holder.bind(results[position] as ExamResultDetail)
-        }
+    override fun onBindViewHolder(holder: ExamResultDetailViewHolder, position: Int) {
+        holder.bind(results[position])
     }
 
     override fun getItemCount(): Int = results.size
 
-    override fun getItemViewType(position: Int): Int {
-        return when (results[position]) {
-            is UserResult -> VIEW_TYPE_USER_RESULT
-            is ExamResultDetail -> VIEW_TYPE_EXAM_RESULT_DETAIL
-            else -> throw IllegalArgumentException("Invalid item type")
-        }
-    }
-
-    fun submitList(newResults: List<Any>) {
+    fun submitList(newResults: List<ExamResultDetail>) {
         results = newResults
         notifyDataSetChanged()
     }

@@ -5,41 +5,32 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- TextView to display exam title -->
     <TextView
         android:id="@+id/tvExamTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
+    <!-- TextView to display user details -->
     <TextView
-        android:id="@+id/tvScore"
+        android:id="@+id/tvExamDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="14sp" />
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp" />
 
-    <TextView
-        android:id="@+id/tvAddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/tvDuration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp" />
-
+    <!-- Button to show user location on map -->
     <Button
-        android:id="@+id/btnRenderMap"
+        android:id="@+id/btnShowOnMap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Show on Map"
-        android:visibility="gone" /> <!-- Default visibility set to gone -->
+        android:layout_marginTop="16dp"
+        android:background="?attr/selectableItemBackground"
+        android:textColor="?attr/colorPrimary" />
 
-    <org.osmdroid.views.MapView
-        android:id="@+id/mapView"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:visibility="gone" /> <!-- Default visibility set to gone -->
 </LinearLayout>
