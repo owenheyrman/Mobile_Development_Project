@@ -1,10 +1,14 @@
 package edu.ap.herexamen_owen_heyrman
 
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TableLayout
+import android.widget.TableRow
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
@@ -59,25 +63,62 @@ class ResultsAdapter(
 
     inner class ExamResultDetailViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val tvExamTitle: TextView = view.findViewById(R.id.tvExamTitle)
-        private val tvExamDetails: TextView = view.findViewById(R.id.tvExamDetails)
-        private val btnRenderMap: Button = view.findViewById(R.id.btnRenderMap)
+        private val tlExamDetails: TableLayout = view.findViewById(R.id.tlExamDetails)
 
         fun bind(examResultDetail: ExamResultDetail) {
-            tvExamTitle.text = "Exam: ${examResultDetail.title}"
-            tvExamDetails.text = examResultDetail.userDetails.joinToString("\n") {
-                "Name: ${it.firstName} ${it.lastName}, Score: ${it.score}, Address: ${it.address}, Duration: ${it.duration}"
-            }
+            tvExamTitle.text = "${examResultDetail.title}"
+            tlExamDetails.removeAllViews()
 
-            // Set up the "Render on Map" button visibility and click listener
-            btnRenderMap.visibility = if (isUserView) View.VISIBLE else View.GONE
-            btnRenderMap.setOnClickListener {
-                // Assuming the first user detail should be used here; modify as needed
-                examResultDetail.userDetails.firstOrNull()?.let { userExamDetail ->
-                    onRenderMapClick(userExamDetail)
-                }
+            // Add the header row programmatically
+            val headerRow = TableRow(itemView.context)
+            headerRow.setBackgroundColor(ContextCompat.getColor(itemView.context, android.R.color.darker_gray)) // Light gray background for headers
+
+            val headers = listOf("Name", "Score %", "Address", "Duration")
+            for (header in headers) {
+                val tvHeader = TextView(itemView.context)
+                tvHeader.text = header
+                tvHeader.setPadding(8, 8, 8, 8)
+                tvHeader.setTypeface(null, Typeface.BOLD)
+                headerRow.addView(tvHeader)
+            }
+            tlExamDetails.addView(headerRow)
+
+            // Add user details to the table
+            for (userDetail in examResultDetail.userDetails) {
+                val tableRow = TableRow(itemView.context)
+
+                // Name
+                val tvName = TextView(itemView.context)
+                tvName.text = "${userDetail.firstName} ${userDetail.lastName}"
+                tvName.setPadding(8, 8, 8, 8)
+                tableRow.addView(tvName)
+
+                // Score
+                val tvScore = TextView(itemView.context)
+                tvScore.text = "${userDetail.score}%"
+                tvScore.setPadding(8, 8, 8, 8)
+                tableRow.addView(tvScore)
+
+                // Address
+                val tvAddress = TextView(itemView.context)
+                tvAddress.text = userDetail.address
+                tvAddress.setPadding(8, 8, 8, 8)
+                tableRow.addView(tvAddress)
+
+                // Duration
+                val tvDuration = TextView(itemView.context)
+                tvDuration.text = userDetail.duration
+                tvDuration.setPadding(8, 8, 8, 8)
+                tableRow.addView(tvDuration)
+
+                tlExamDetails.addView(tableRow)
             }
         }
     }
+
+
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)

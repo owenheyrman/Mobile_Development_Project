@@ -1,25 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- res/layout/activity_admin_dashboard.xml -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/white">
+
+    <Button
+        android:id="@+id/btnAddUser"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Add User"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:background="@drawable/button_background"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"/>
+
+    <Button
+        android:id="@+id/btnAddExam"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Add Exam"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:background="@drawable/button_background"
+        app:layout_constraintTop_toBottomOf="@id/btnAddUser"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        android:layout_marginTop="16dp"/>
 
     <Button
         android:id="@+id/btnViewResultsByUser"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="View Results by User" />
+        android:text="View Results by User"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:background="@drawable/button_background"
+        app:layout_constraintTop_toBottomOf="@id/btnAddExam"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        android:layout_marginTop="16dp"/>
 
     <Button
         android:id="@+id/btnViewResultsByExam"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="View Results by Exam" />
+        android:text="View Results by Exam"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:background="@drawable/button_background"
+        app:layout_constraintTop_toBottomOf="@id/btnViewResultsByUser"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        android:layout_marginTop="16dp"/>
 
+
+    <!-- Fragment container to host fragments -->
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp" />
-</LinearLayout>
+        android:layout_height="0dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@id/btnViewResults"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

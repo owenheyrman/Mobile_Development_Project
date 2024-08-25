@@ -5,23 +5,61 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Exam Title -->
     <TextView
         android:id="@+id/tvExamTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
 
-    <TextView
-        android:id="@+id/tvExamDetails"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="14sp" />
+    <!-- Scrollable Table for Exam Details -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/btnRenderMap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Render on Map"
-        android:visibility="gone" /> <!-- Default visibility set to gone -->
+        <TableLayout
+            android:id="@+id/tlExamDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1"
+            android:paddingBottom="8dp">
+
+            <!-- Header Row -->
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#cccccc"> <!-- Light gray background for headers -->
+
+                <TextView
+                    android:text="Name"
+                    android:textStyle="bold"
+                    android:padding="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:text="Score %"
+                    android:textStyle="bold"
+                    android:padding="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:text="Address"
+                    android:textStyle="bold"
+                    android:padding="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:text="Duration"
+                    android:textStyle="bold"
+                    android:padding="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </TableRow>
+
+            <!-- Data Rows will be added dynamically in the adapter -->
+
+        </TableLayout>
+    </HorizontalScrollView>
 </LinearLayout>
