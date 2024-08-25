@@ -49,6 +49,7 @@
     <string name="title_activity_admin_login">AdminLoginActivity</string>
     <string name="title_activity_user_flow">UserFlowActivity</string>
     <string name="title_activity_admin_dashboard">AdminDashboardActivity</string>
+    <string name="title_fragment_user_list">Please select your name.</string>
 
     <string-array name="question_types">
         <item>Multiple Choice</item>

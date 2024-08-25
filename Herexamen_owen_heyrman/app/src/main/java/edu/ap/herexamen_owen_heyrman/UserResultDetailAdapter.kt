@@ -39,7 +39,7 @@ class UserResultDetailAdapter(
         private val tlExamDetails: TableLayout = view.findViewById(R.id.tlExamDetails)
 
         fun bind(examResultDetail: ExamResultDetail) {
-            tvUserName.text = "${examResultDetail.title}"
+            tvUserName.text = "${examResultDetail.userDetails[0].firstName} ${examResultDetail.userDetails[0].lastName}"
 
             // Clear previous details
             tlExamDetails.removeAllViews()

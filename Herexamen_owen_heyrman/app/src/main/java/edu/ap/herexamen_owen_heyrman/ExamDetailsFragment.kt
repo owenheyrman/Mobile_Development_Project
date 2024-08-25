@@ -220,7 +220,23 @@ class ExamDetailsFragment : Fragment() {
         }
 
         // Calculate the number of correct answers provided by the user
-        val correctAnswers = userResponses.count { (question, answer) -> questionsWithAnswers[question] == answer }
+        val correctAnswers = userResponses.count { (question, userAnswer) ->
+            val correctAnswer = questionsWithAnswers[question]
+
+            // Check for multiple-choice questions or open-ended questions
+            if (correctAnswer != null) {
+                // Trim and ignore case for open-ended questions
+                if (userAnswer.contains(correctAnswer, ignoreCase = true)) {
+                    Log.d(TAG, "Question '$question' is correct (Open-ended match)")
+                    true
+                } else {
+                    Log.d(TAG, "Question '$question' is incorrect")
+                    false
+                }
+            } else {
+                false
+            }
+        }
 
         // Calculate the total number of questions
         val totalQuestions = questionsWithAnswers.size
@@ -235,6 +251,7 @@ class ExamDetailsFragment : Fragment() {
         Log.d(TAG, "Calculated score: $percentageScore%")
         return percentageScore
     }
+
 
 
     override fun onDestroyView() {

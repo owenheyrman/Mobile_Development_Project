@@ -126,12 +126,19 @@ class ExamResultsFragment : Fragment() {
                 val userResultsMap = result.documents.groupBy { it.getString("userId") }
                 val userResults = mutableListOf<ExamResultDetail>()
 
+                // This map will hold the title for each userId
+                val userTitlesMap = mutableMapOf<String, String>()
+
                 val userDetailTasks = userResultsMap.map { (userId, documents) ->
                     val userRef = db.collection("users").document(userId ?: "Unknown")
                     userRef.get().addOnSuccessListener { userSnapshot ->
                         val firstName = userSnapshot.getString("firstName") ?: "Unknown"
                         val lastName = userSnapshot.getString("lastName") ?: "Unknown"
+
                         val userExamDetails = documents.map { doc ->
+                            val title = doc.getString("title") ?: "Unknown Title"
+                            userTitlesMap[userId ?: "Unknown"] = title // Map title to userId
+
                             UserExamDetail(
                                 userId = userId ?: "Unknown",
                                 firstName = firstName,
@@ -145,8 +152,9 @@ class ExamResultsFragment : Fragment() {
                                 )
                             )
                         }
+
                         val examResultDetail = ExamResultDetail(
-                            title = "${firstName} ${lastName}",
+                            title = userTitlesMap[userId ?: "Unknown"] ?: "Unknown Title",
                             userDetails = userExamDetails
                         )
                         userResults.add(examResultDetail)
@@ -163,6 +171,7 @@ class ExamResultsFragment : Fragment() {
                 Log.e(TAG, "Error fetching results", exception)
             }
     }
+
 
 
     private fun fetchResultsByExam() {
