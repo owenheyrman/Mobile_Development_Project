@@ -26,11 +26,14 @@ class ExamResultsFragment : Fragment() {
     private lateinit var resultsAdapter: ResultsAdapter
     private lateinit var userResultDetailAdapter: UserResultDetailAdapter
 
-    private fun convertToOsmGeoPoint(firestoreGeoPoint: com.google.firebase.firestore.GeoPoint?): GeoPoint? {
-        return firestoreGeoPoint?.let {
-            GeoPoint(it.latitude, it.longitude)
+    private fun convertToOsmGeoPoint(latitude: Double?, longitude: Double?): GeoPoint? {
+        return if (latitude != null && longitude != null) {
+            GeoPoint(latitude, longitude)
+        } else {
+            null
         }
     }
+
 
 
     companion object {
@@ -97,21 +100,23 @@ class ExamResultsFragment : Fragment() {
 
 
     private fun onShowMapClick(userExamDetail: UserExamDetail) {
-        // Assume you have latitude and longitude fields in UserExamDetail
         val location = userExamDetail.location
-        binding.mapView.controller.setCenter(location)
+        if (location != null) {
+            // Create an instance of MapDisplayFragment
+            val mapDisplayFragment = MapDisplayFragment.newInstance(location.latitude, location.longitude)
 
-        // Clear existing markers
-        binding.mapView.overlays.clear()
-
-        // Add new marker
-        val marker = Marker(binding.mapView)
-        marker.position = location
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-        binding.mapView.overlays.add(marker)
-
-        binding.mapView.invalidate()
+            // Open MapDisplayFragment
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, mapDisplayFragment) // Assuming fragment_container is the ID of your main container
+                .addToBackStack(null) // Add to back stack so it can be navigated back
+                .commit()
+        } else {
+            Toast.makeText(context, "Location not available for this result.", Toast.LENGTH_SHORT).show()
+        }
     }
+
+
+
 
     private fun fetchResultsByUser() {
         Log.d(TAG, "Fetching results by user")
@@ -134,11 +139,14 @@ class ExamResultsFragment : Fragment() {
                                 score = (doc.getLong("score") ?: 0).toInt(),
                                 address = doc.getString("address") ?: "Unknown Address",
                                 duration = doc.getString("duration") ?: "Unknown Duration",
-                                location = convertToOsmGeoPoint(doc.getGeoPoint("location"))
+                                location = convertToOsmGeoPoint(
+                                    doc.getDouble("latitude"),
+                                    doc.getDouble("longitude")
+                                )
                             )
                         }
                         val examResultDetail = ExamResultDetail(
-                            title = "Exam Result", // Or set an appropriate title
+                            title = "${firstName} ${lastName}",
                             userDetails = userExamDetails
                         )
                         userResults.add(examResultDetail)
@@ -155,6 +163,7 @@ class ExamResultsFragment : Fragment() {
                 Log.e(TAG, "Error fetching results", exception)
             }
     }
+
 
     private fun fetchResultsByExam() {
         Log.d(TAG, "Fetching results by exam")
@@ -187,8 +196,7 @@ class ExamResultsFragment : Fragment() {
                                         ?.getString("address") ?: "Unknown Address",
                                     duration = documents.find { it.getString("userId") == userId }
                                         ?.getString("duration") ?: "Unknown Duration",
-                                    location = convertToOsmGeoPoint(documents.find { it.getString("userId") == userId }
-                                        ?.getGeoPoint("location"))
+
                                 )
                             }
                             // Add the details to the list
