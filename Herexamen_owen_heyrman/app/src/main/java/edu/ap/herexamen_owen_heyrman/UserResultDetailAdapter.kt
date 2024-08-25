@@ -62,7 +62,7 @@ class UserResultDetailAdapter(
 
                 // Title
                 val tvTitle = TextView(itemView.context)
-                tvTitle.text = examResultDetail.title
+                tvTitle.text = "${userExamDetail.title}"
                 tvTitle.setPadding(8, 8, 8, 8)
                 tableRow.addView(tvTitle)
 

@@ -37,7 +37,8 @@ data class UserExamDetail(
     val score: Int = 0,
     val address: String = "",
     val duration: String = "",
-    val location: GeoPoint? = null // Added location property
+    val location: GeoPoint? = null,
+    val title: String = ""
 )
 
 data class ExamResultDetail(

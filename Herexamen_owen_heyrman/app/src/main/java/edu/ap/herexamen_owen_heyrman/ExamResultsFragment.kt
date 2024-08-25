@@ -149,7 +149,8 @@ class ExamResultsFragment : Fragment() {
                                 location = convertToOsmGeoPoint(
                                     doc.getDouble("latitude"),
                                     doc.getDouble("longitude")
-                                )
+                                ),
+                                title = doc.getString("title") ?: "Unknown Exam"
                             )
                         }
 
