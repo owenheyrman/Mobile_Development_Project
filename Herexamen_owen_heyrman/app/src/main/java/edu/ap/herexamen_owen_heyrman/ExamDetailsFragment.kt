@@ -211,16 +211,31 @@ class ExamDetailsFragment : Fragment() {
 
     private fun calculateScore(userResponses: Map<String, String>): Int {
         Log.d(TAG, "Calculating score")
-        val correctAnswers = viewModel.selectedExam.value?.questions?.associateBy { it.questionText }
+
+        // Get the list of questions and correct answers
+        val questionsWithAnswers = viewModel.selectedExam.value?.questions?.associateBy { it.questionText }
             ?.mapValues { it.value.correctAnswer } ?: run {
             Log.e(TAG, "No correct answers found")
             return 0
         }
 
-        val score = userResponses.count { (question, answer) -> correctAnswers[question] == answer }
-        Log.d(TAG, "Calculated score: $score")
-        return score
+        // Calculate the number of correct answers provided by the user
+        val correctAnswers = userResponses.count { (question, answer) -> questionsWithAnswers[question] == answer }
+
+        // Calculate the total number of questions
+        val totalQuestions = questionsWithAnswers.size
+
+        // Calculate the score as a percentage
+        val percentageScore = if (totalQuestions > 0) {
+            (correctAnswers.toDouble() / totalQuestions * 100).toInt()
+        } else {
+            0
+        }
+
+        Log.d(TAG, "Calculated score: $percentageScore%")
+        return percentageScore
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

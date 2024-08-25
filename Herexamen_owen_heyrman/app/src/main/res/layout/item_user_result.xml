@@ -18,4 +18,9 @@
         android:layout_height="wrap_content"
         android:textSize="14sp" />
 
+    <!-- OSMDroid MapView -->
+    <org.osmdroid.views.MapView
+        android:id="@+id/osmMapView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
 </LinearLayout>

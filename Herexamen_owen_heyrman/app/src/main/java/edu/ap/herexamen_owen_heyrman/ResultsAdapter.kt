@@ -15,26 +15,31 @@ data class ExamScore(
     val title: String = "",
     val score: Int = 0
 )
+
 data class UserResult(
     val userId: String = "",
     val firstName: String = "",
     val lastName: String = "",
-    val results: List<ExamScore> = emptyList()
+    val results: List<ExamScore> = emptyList(),
+    val latitude: Double? = null,  // Added for map feature
+    val longitude: Double? = null  // Added for map feature
 )
+
 data class UserExamDetail(
     val userId: String = "",
     var firstName: String = "",
     var lastName: String = "",
     val score: Int = 0,
     val address: String = "",
-    val duration: String = ""
+    val duration: String = "",
+    val latitude: Double? = null,  // Added for map feature
+    val longitude: Double? = null  // Added for map feature
 )
+
 data class ExamResultDetail(
     val title: String = "",
     val userDetails: List<UserExamDetail> = emptyList()
 )
-
-
 
 class ResultsAdapter(
     private var results: List<Any>

@@ -82,5 +82,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("org.osmdroid:osmdroid-android:6.1.13")
+
 
 }
