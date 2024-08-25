@@ -53,8 +53,10 @@ class ExamResultsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize the map only if view mode is "by_user"
-        if (arguments?.getString(ARG_VIEW_MODE) == "by_user") {
+        val viewMode = arguments?.getString(ARG_VIEW_MODE)
+        Log.d(TAG, "View mode received: $viewMode")
+
+        if (viewMode == "by_user") {
             binding.mapView.visibility = View.VISIBLE
             binding.mapView.setMultiTouchControls(true)
             val mapController = binding.mapView.controller
@@ -72,12 +74,8 @@ class ExamResultsFragment : Fragment() {
         }
 
         binding.rvResults.layoutManager = LinearLayoutManager(context)
-        resultsAdapter = ResultsAdapter(emptyList())
+        resultsAdapter = ResultsAdapter(emptyList(), viewMode == "by_user", ::onRenderMapClick)
         binding.rvResults.adapter = resultsAdapter
-
-        // Fetch results based on view mode
-        val viewMode = arguments?.getString(ARG_VIEW_MODE)
-        Log.d(TAG, "View mode received: $viewMode")
 
         when (viewMode) {
             "by_user" -> fetchResultsByUser()
@@ -89,40 +87,47 @@ class ExamResultsFragment : Fragment() {
         }
     }
 
+
     private fun fetchResultsByUser() {
         Log.d(TAG, "Fetching results by user")
         db.collection("results")
             .get()
             .addOnSuccessListener { result ->
-                val userResults = result.documents.groupBy { it.getString("userId") }
-                    .map { (userId, documents) ->
-                        val userRef = db.collection("users").document(userId ?: "Unknown")
-                        userRef.get().addOnSuccessListener { userSnapshot ->
-                            val firstName = userSnapshot.getString("firstName") ?: "Unknown"
-                            val lastName = userSnapshot.getString("lastName") ?: "Unknown"
-                            val examScores = documents.map { doc ->
-                                ExamScore(
-                                    title = doc.getString("title") ?: "Unknown Title",
-                                    score = (doc.getLong("score") ?: 0).toInt()
-                                )
-                            }
-                            val userResult = UserResult(
-                                userId = userId ?: "Unknown",
-                                firstName = firstName,
-                                lastName = lastName,
-                                results = examScores
+                val userResultsMap = result.documents.groupBy { it.getString("userId") }
+                val userResults = mutableListOf<UserResult>()
+
+                val userDetailTasks = userResultsMap.map { (userId, documents) ->
+                    val userRef = db.collection("users").document(userId ?: "Unknown")
+                    userRef.get().addOnSuccessListener { userSnapshot ->
+                        val firstName = userSnapshot.getString("firstName") ?: "Unknown"
+                        val lastName = userSnapshot.getString("lastName") ?: "Unknown"
+                        val examScores = documents.map { doc ->
+                            ExamScore(
+                                title = doc.getString("title") ?: "Unknown Title",
+                                score = (doc.getLong("score") ?: 0).toInt()
                             )
-                            resultsAdapter.submitList(listOf(userResult))
-                        }.addOnFailureListener { exception ->
-                            Log.e(TAG, "Error fetching user details", exception)
+                        }
+                        val userResult = UserResult(
+                            userId = userId ?: "Unknown",
+                            firstName = firstName,
+                            lastName = lastName,
+                            results = examScores
+                        )
+                        userResults.add(userResult)
+
+                        // Submit the list only after processing all users
+                        if (userResults.size == userResultsMap.size) {
+                            resultsAdapter.submitList(userResults)
                         }
                     }
+                }
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(context, "Error fetching results: ${exception.message}", Toast.LENGTH_SHORT).show()
                 Log.e(TAG, "Error fetching results", exception)
             }
     }
+
 
     private fun fetchResultsByExam() {
         Log.d(TAG, "Fetching results by exam")
@@ -179,6 +184,37 @@ class ExamResultsFragment : Fragment() {
                 Toast.makeText(context, "Error fetching results: ${exception.message}", Toast.LENGTH_SHORT).show()
                 Log.e(TAG, "Error fetching results", exception)
             }
+    }
+
+    private fun onRenderMapClick(userExamDetail: UserExamDetail) {
+        // Clear previous markers
+        binding.mapView.overlays.clear()
+
+        // Extract location from the userExamDetail
+        val address = userExamDetail.address
+        val location = fetchLocationFromAddress(address) // Implement this method
+
+        // Add a new marker if location is found
+        location?.let {
+            val marker = Marker(binding.mapView)
+            marker.position = it
+            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            binding.mapView.overlays.add(marker)
+
+            // Center the map on the marker
+            val mapController = binding.mapView.controller
+            mapController.setZoom(15.0)
+            mapController.setCenter(it)
+        } ?: run {
+            Toast.makeText(context, "Unable to find location for address: $address", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun fetchLocationFromAddress(address: String): GeoPoint? {
+        // Implement a method to fetch GeoPoint from address
+        // This might involve using a geocoding API
+        // For now, return null
+        return null
     }
 
     override fun onDestroyView() {

@@ -18,4 +18,10 @@
         android:layout_height="wrap_content"
         android:textSize="14sp" />
 
+    <Button
+        android:id="@+id/btnRenderMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Render on Map"
+        android:visibility="gone" /> <!-- Default visibility set to gone -->
 </LinearLayout>
